@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Document Library</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- PDF.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <!-- PageFlip library -->
+    <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+</head>
+<body>
+
+    <header>
+        <h1>Weekly Document Library</h1>
+        <p>Select a date to open the interactive reader</p>
+    </header>
+
+    <main>
+        <!-- LIBRARY SHELF VIEW (Dynamically Populated) -->
+        <div id="libraryView" class="library-grid">
+            <p style="color: #999;">Loading library documents...</p>
+        </div>
+
+        <!-- READER VIEW (Hidden by default) -->
+        <div id="readerView" class="reader-container" style="display: none;">
+            <div class="reader-header">
+                <button onclick="closeReader()" class="back-btn">&larr; Back to Library</button>
+                <h2 id="readerTitle">Document Title</h2>
+            </div>
+            
+            <div class="book-viewport">
+                <div id="book"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
