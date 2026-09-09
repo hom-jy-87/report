@@ -102,9 +102,10 @@ async function loadAndOpenPDF(pdfPath, title) {
             bookContainer.appendChild(pageDiv);
         }
 
+        // Single-page portrait reader configuration
         activePageFlip = new St.PageFlip(bookContainer, {
-            width: 500,   // Width of the single page
-            height: 700,  // Height of the single page
+            width: 500,
+            height: 700,
             size: "fixed",
             minWidth: 300,
             maxWidth: 800,
@@ -114,8 +115,8 @@ async function loadAndOpenPDF(pdfPath, title) {
             drawShadow: true,
             maxShadowOpacity: 0.5,
             mobileScrollSupport: true,
-            usePortrait: true, // Forces single-page portrait layout
-            flippingTime: 600  // Speed of the flip animation in milliseconds
+            usePortrait: true, // Forces single-page layout
+            flippingTime: 600
         });
 
         activePageFlip.loadFromHTML(document.querySelectorAll('.page'));
@@ -127,12 +128,20 @@ async function loadAndOpenPDF(pdfPath, title) {
 }
 
 function closeReader() {
-    if (activePageFlip) {
-        activePageFlip.destroy();
-        activePageFlip = null;
+    // Safely destroy the flipbook instance if it exists
+    try {
+        if (activePageFlip) {
+            activePageFlip.destroy();
+            activePageFlip = null;
+        }
+    } catch (e) {
+        console.log("Cleanup note:", e);
     }
     
+    // Clear out the reader contents
     document.getElementById('book').innerHTML = '';
+    
+    // Explicitly hide the reader and show the library shelf
     document.getElementById('readerView').style.display = 'none';
     document.getElementById('libraryView').style.display = 'grid';
 }
