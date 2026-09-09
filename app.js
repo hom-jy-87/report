@@ -10,7 +10,6 @@ const GITHUB_REPO = 'report';
 document.addEventListener('DOMContentLoaded', loadPDFLibrary);
 
 async function loadAndOpenPDF(pdfPath, title) {
-    // Hide the header and library view, show the reader view
     document.querySelector('header').style.display = 'none';
     document.getElementById('libraryView').style.display = 'none';
     document.getElementById('readerView').style.display = 'flex';
@@ -18,6 +17,9 @@ async function loadAndOpenPDF(pdfPath, title) {
 
     const bookContainer = document.getElementById('book');
     bookContainer.innerHTML = '';
+    
+    // 1. Hide the book container while it builds in the background
+    bookContainer.style.opacity = '0';
 
     try {
         const loadingTask = pdfjsLib.getDocument(pdfPath);
@@ -63,9 +65,13 @@ async function loadAndOpenPDF(pdfPath, title) {
 
         activePageFlip.loadFromHTML(document.querySelectorAll('.page'));
 
+        // 2. Once the flipbook engine is locked in, reveal it instantly
+        bookContainer.style.opacity = '1';
+
     } catch (error) {
         console.error("Error loading PDF:", error);
         alert("Could not load the PDF file.");
+        bookContainer.style.opacity = '1';
     }
 }
 
