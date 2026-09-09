@@ -13,29 +13,42 @@
 </head>
 <body>
 
-    <header>
-        <h1>Weekly Document Library</h1>
-        <p>Select a date to open the interactive reader</p>
-    </header>
-
-    <main>
-        <!-- LIBRARY SHELF VIEW (Dynamically Populated) -->
-        <div id="libraryView" class="library-grid">
-            <p style="color: #999;">Loading library documents...</p>
+    <!-- LOCK SCREEN (Face ID Gate) -->
+    <div id="lockScreen" class="lock-screen">
+        <div class="lock-box">
+            <h2>Restricted Library</h2>
+            <p>Authenticate with Face ID to access weekly reports.</p>
+            <button id="authBtn" class="auth-btn">Unlock with Face ID</button>
+            <p id="authStatus" class="auth-status"></p>
         </div>
+    </div>
 
-        <!-- READER VIEW (Hidden by default) -->
-        <div id="readerView" class="reader-container" style="display: none;">
-            <div class="reader-header">
-                <button onclick="closeReader()" class="back-btn">&larr; Back to Library</button>
-                <h2 id="readerTitle">Document Title</h2>
+    <!-- MAIN APP CONTAINER (Hidden until unlocked) -->
+    <div id="appContainer" style="display: none;">
+        <header>
+            <h1>Weekly Document Library</h1>
+            <p>Select a date to open the interactive reader</p>
+        </header>
+
+        <main>
+            <!-- LIBRARY SHELF VIEW -->
+            <div id="libraryView" class="library-grid">
+                <p style="color: #999;">Loading library documents...</p>
             </div>
-            
-            <div class="book-viewport">
-                <div id="book"></div>
+
+            <!-- READER VIEW (Hidden by default) -->
+            <div id="readerView" class="reader-container" style="display: none;">
+                <div class="reader-header">
+                    <button onclick="closeReader()" class="back-btn">&larr; Back to Library</button>
+                    <h2 id="readerTitle">Document Title</h2>
+                </div>
+                
+                <div class="book-viewport">
+                    <div id="book"></div>
+                </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script src="app.js"></script>
 </body>
