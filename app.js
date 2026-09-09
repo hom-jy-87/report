@@ -1,70 +1,64 @@
-// Configure PDF.js worker source
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
 let activePageFlip = null;
 
 // --- CONFIGURATION ---
-// Replace these with your actual GitHub username and repository name
-const GITHUB_USER = 'YOUR_GITHUB_USERNAME';
-const GITHUB_REPO = 'YOUR_REPO_NAME';
+const GITHUB_USER = 'hom-jy-87';
+const GITHUB_REPO = 'report';
 
-// Automatically load the library when the page opens
-document.addEventListener('DOMContentLoaded', fetchPDFLibrary);
+// Load library immediately on startup
+document.addEventListener('DOMContentLoaded', loadPDFLibrary);
 
-async function fetchPDFLibrary() {
+async function loadPDFLibrary() {
     const libraryGrid = document.getElementById('libraryView');
-    
+    let pdfFiles = [];
+
     try {
-        // Fetch the file list from the GitHub repository API
         const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/pdfs`;
         const response = await fetch(apiUrl);
         
-        if (!response.ok) throw new Error("Could not fetch repository contents.");
-        
-        const files = await response.json();
-        
-        // Filter only .pdf files matching yyyy-mm-dd format
-        const pdfFiles = files.filter(file => file.name.endsWith('.pdf'));
-
-        if (pdfFiles.length === 0) {
-            libraryGrid.innerHTML = '<p style="color: #999;">No PDF documents found in the folder.</p>';
-            return;
+        if (response.ok) {
+            const data = await response.json();
+            pdfFiles = data
+                .filter(file => file.name.endsWith('.pdf'))
+                .map(file => ({ name: file.name, url: file.download_url }));
         }
-
-        // Sort files by filename in descending order (newest dates first)
-        pdfFiles.sort((a, b) => b.name.localeCompare(a.name));
-
-        // Clear loading message
-        libraryGrid.innerHTML = '';
-
-        // Build a card for each PDF automatically
-        pdfFiles.forEach(file => {
-            const fileNameWithoutExt = file.name.replace('.pdf', ''); // e.g. "2026-09-04"
-            const formattedTitle = formatDateString(fileNameWithoutExt); // e.g. "September 4, 2026"
-
-            const card = document.createElement('div');
-            card.className = 'doc-card';
-            card.onclick = () => loadAndOpenPDF(file.download_url, formattedTitle);
-
-            card.innerHTML = `
-                <h3>${formattedTitle}</h3>
-                <span class="read-btn">Open Book &rarr;</span>
-            `;
-
-            libraryGrid.appendChild(card);
-        });
-
-    } catch (error) {
-        console.error("Error loading library:", error);
-        // Fallback for local testing where GitHub API won't return live data
-        libraryGrid.innerHTML = '<p style="color: #ff9999;">Note: GitHub API folder scanning requires hosting on GitHub Pages. (Local fallback active).</p>';
+    } catch (e) {
+        console.log("Local test mode: falling back to local files.");
     }
+
+    // Local Fallback if testing offline
+    if (pdfFiles.length === 0) {
+        const localTestFiles = ['2026-09-04.pdf', '2026-08-28.pdf', '2026-08-21.pdf'];
+        pdfFiles = localTestFiles.map(filename => ({
+            name: filename,
+            url: `pdfs/${filename}`
+        }));
+    }
+
+    pdfFiles.sort((a, b) => b.name.localeCompare(a.name));
+    libraryGrid.innerHTML = '';
+
+    pdfFiles.forEach(file => {
+        const fileNameWithoutExt = file.name.replace('.pdf', '');
+        const formattedTitle = formatDateString(fileNameWithoutExt);
+
+        const card = document.createElement('div');
+        card.className = 'doc-card';
+        card.onclick = () => loadAndOpenPDF(file.url, formattedTitle);
+
+        card.innerHTML = `
+            <h3>${formattedTitle}</h3>
+            <span class="read-btn">Open Book &rarr;</span>
+        `;
+
+        libraryGrid.appendChild(card);
+    });
 }
 
-// Helper function to turn "2026-09-04" into "September 4, 2026"
 function formatDateString(dateStr) {
     const [year, month, day] = dateStr.split('-');
-    if (!year || !month || !day) return dateStr; // Fallback if format differs
+    if (!year || !month || !day) return dateStr;
     
     const date = new Date(year, month - 1, day);
     return date.toLocaleDateString('en-US', { 
