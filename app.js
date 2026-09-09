@@ -103,17 +103,19 @@ async function loadAndOpenPDF(pdfPath, title) {
         }
 
         activePageFlip = new St.PageFlip(bookContainer, {
-            width: 450,
-            height: 650,
+            width: 500,   // Width of the single page
+            height: 700,  // Height of the single page
             size: "fixed",
             minWidth: 300,
-            maxWidth: 700,
+            maxWidth: 800,
             minHeight: 400,
-            maxHeight: 900,
+            maxHeight: 1000,
             showCover: false,
             drawShadow: true,
             maxShadowOpacity: 0.5,
-            mobileScrollSupport: true
+            mobileScrollSupport: true,
+            usePortrait: true, // Forces single-page portrait layout
+            flippingTime: 600  // Speed of the flip animation in milliseconds
         });
 
         activePageFlip.loadFromHTML(document.querySelectorAll('.page'));
