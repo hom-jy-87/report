@@ -87,35 +87,84 @@ async function loadAndOpenPDF(pdfPath, title) {
         const pdfDoc = await loadingTask.promise;
         const numPages = pdfDoc.numPages;
 
-        for (let i = 1; i <= numPages; i++) {
-            const page = await pdfDoc.getPage(i);
-            const viewport = page.getViewport({ scale: 1.5 });
-
-            const pageDiv = document.createElement('div');
-            pageDiv.className = 'page';
-
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-
-            await page.render({
-                canvasContext: context,
-                viewport: viewport
-            }).promise;
-
-            pageDiv.appendChild(canvas);
-            bookContainer.appendChild(pageDiv);
-        }
-
-        // Responsive Check: Mobile uses vertical stack for smooth scroll/pinch-zoom, Desktop uses flipbook
         const isMobile = window.innerWidth < 768;
 
         if (isMobile) {
+            // --- MOBILE LAZY-LOADING STACK (Crash-Proof) ---
             bookContainer.classList.add('mobile-scroll-view');
+
+            for (let i = 1; i <= numPages; i++) {
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'page mobile-placeholder';
+                pageDiv.dataset.pageNumber = i;
+                
+                // Add a placeholder height based on standard letter aspect ratio so scrolling feels smooth instantly
+                pageDiv.style.aspectRatio = '1 / 1.414';
+                bookContainer.appendChild(pageDiv);
+            }
+
             bookContainer.style.opacity = '1';
+
+            // Observer to render pages only when they scroll into view
+            const observer = new IntersectionObserver(async (entries, observer) => {
+                for (const entry of entries) {
+                    if (entry.isIntersecting) {
+                        const pageDiv = entry.target;
+                        const pageNum = parseInt(pageDiv.dataset.pageNumber);
+                        
+                        if (!pageDiv.dataset.rendered) {
+                            pageDiv.dataset.rendered = "true";
+                            try {
+                                const page = await pdfDoc.getPage(pageNum);
+                                const viewport = page.getViewport({ scale: 1.5 });
+
+                                const canvas = document.createElement('canvas');
+                                const context = canvas.getContext('2d');
+                                canvas.height = viewport.height;
+                                canvas.width = viewport.width;
+
+                                await page.render({
+                                    canvasContext: context,
+                                    viewport: viewport
+                                }).promise;
+
+                                pageDiv.innerHTML = '';
+                                pageDiv.appendChild(canvas);
+                            } catch (err) {
+                                console.error(`Error rendering page ${pageNum}:`, err);
+                            }
+                        }
+                    }
+                }
+            }, { root: bookContainer, rootMargin: '200px' }); // Pre-render slightly before scrolling into view
+
+            document.querySelectorAll('.mobile-placeholder').forEach(el => observer.observe(el));
+
         } else {
+            // --- DESKTOP FLIPBOOK VIEW ---
             bookContainer.classList.remove('mobile-scroll-view');
+
+            for (let i = 1; i <= numPages; i++) {
+                const page = await pdfDoc.getPage(i);
+                const viewport = page.getViewport({ scale: 1.5 });
+
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'page';
+
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                await page.render({
+                    canvasContext: context,
+                    viewport: viewport
+                }).promise;
+
+                pageDiv.appendChild(canvas);
+                bookContainer.appendChild(pageDiv);
+            }
+
             activePageFlip = new St.PageFlip(bookContainer, {
                 width: 500,
                 height: 700,
