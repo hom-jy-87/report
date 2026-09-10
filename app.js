@@ -1,6 +1,7 @@
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
 let activePageFlip = null;
+let currentZoom = 1.0;
 
 // --- CONFIGURATION ---
 const GITHUB_USER = 'hom-jy-87';
@@ -77,7 +78,6 @@ async function loadAndOpenPDF(pdfPath, title) {
     document.querySelector('header').style.display = 'none';
     document.getElementById('libraryView').style.display = 'none';
     document.getElementById('readerView').style.display = 'flex';
-    
 
     const bookContainer = document.getElementById('book');
     bookContainer.innerHTML = '';
@@ -90,7 +90,7 @@ async function loadAndOpenPDF(pdfPath, title) {
 
         for (let i = 1; i <= numPages; i++) {
             const page = await pdfDoc.getPage(i);
-            const viewport = page.getViewport({ scale: 1.5 });
+            const viewport = page.getViewport({ scale: 2.5 }); // High-res rendering for crystal clear mobile reading
 
             const pageDiv = document.createElement('div');
             pageDiv.className = 'page';
@@ -120,7 +120,7 @@ async function loadAndOpenPDF(pdfPath, title) {
             showCover: false,
             drawShadow: true,
             maxShadowOpacity: 0.4,
-            mobileScrollSupport: true, // Re-enables touch support for scaling/scrolling
+            mobileScrollSupport: true,
             usePortrait: true,
             flippingTime: 400
         });
@@ -135,7 +135,33 @@ async function loadAndOpenPDF(pdfPath, title) {
     }
 }
 
+// --- ZOOM CONTROLS ---
+function zoomIn() {
+    if (currentZoom < 2.5) {
+        currentZoom += 0.25;
+        applyZoom();
+    }
+}
+
+function zoomOut() {
+    if (currentZoom > 1.0) {
+        currentZoom -= 0.25;
+        applyZoom();
+    }
+}
+
+function applyZoom() {
+    const book = document.getElementById('book');
+    if (book) {
+        book.style.transform = `scale(${currentZoom})`;
+    }
+}
+
 function closeReader() {
+    // Reset zoom state when closing
+    currentZoom = 1.0;
+    applyZoom();
+
     try {
         if (activePageFlip) {
             activePageFlip.destroy();
