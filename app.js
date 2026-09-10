@@ -90,7 +90,7 @@ async function loadAndOpenPDF(pdfPath, title) {
 
         for (let i = 1; i <= numPages; i++) {
             const page = await pdfDoc.getPage(i);
-            const viewport = page.getViewport({ scale: 2.5 }); // High-res for sharp zooming
+            const viewport = page.getViewport({ scale: 2.5 });
 
             const pageDiv = document.createElement('div');
             pageDiv.className = 'page';
@@ -109,15 +109,13 @@ async function loadAndOpenPDF(pdfPath, title) {
             bookContainer.appendChild(pageDiv);
         }
 
-        // Check if user is on a mobile phone (screen width less than 768px)
+        // Responsive Check: Mobile uses vertical stack for pinch/zoom/pan, Desktop uses flipbook
         const isMobile = window.innerWidth < 768;
 
         if (isMobile) {
-            // Mobile: Switch container to vertical scrolling stack
             bookContainer.classList.add('mobile-scroll-view');
             bookContainer.style.opacity = '1';
         } else {
-            // Desktop/Tablet: Initialize the Page-Flip book
             bookContainer.classList.remove('mobile-scroll-view');
             activePageFlip = new St.PageFlip(bookContainer, {
                 width: 500,
@@ -145,7 +143,7 @@ async function loadAndOpenPDF(pdfPath, title) {
     }
 }
 
-// --- ZOOM CONTROLS ---
+// --- ZOOM CONTROLS (Desktop Only) ---
 function zoomIn() {
     if (currentZoom < 2.5) {
         currentZoom += 0.25;
@@ -168,7 +166,7 @@ function applyZoom() {
 }
 
 function closeReader() {
-    // Reset zoom state when closing
+    // Reset zoom state
     currentZoom = 1.0;
     applyZoom();
 
@@ -181,7 +179,7 @@ function closeReader() {
         console.log("Cleanup note:", e);
     }
     
-    // NUCLEAR OPTION: Recreate the book container entirely to strip all lingering Page-Flip DOM wrappers
+    // Recreate the book container entirely to strip lingering Page-Flip wrappers
     const viewport = document.querySelector('.book-viewport');
     const oldBook = document.getElementById('book');
     if (oldBook) {
