@@ -120,7 +120,7 @@ async function loadAndOpenPDF(pdfPath, title) {
             showCover: false,
             drawShadow: true,
             maxShadowOpacity: 0.4,
-            mobileScrollSupport: false, // Disables page scrolling up/down so swiping turns pages cleanly
+            mobileScrollSupport: true, // Re-enables touch support for scaling/scrolling
             usePortrait: true,
             flippingTime: 400
         });
