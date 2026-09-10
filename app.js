@@ -90,7 +90,7 @@ async function loadAndOpenPDF(pdfPath, title) {
 
         for (let i = 1; i <= numPages; i++) {
             const page = await pdfDoc.getPage(i);
-            const viewport = page.getViewport({ scale: 2.5 }); // High-res rendering for crystal clear mobile reading
+            const viewport = page.getViewport({ scale: 2.5 }); // High-res for sharp zooming
 
             const pageDiv = document.createElement('div');
             pageDiv.className = 'page';
@@ -109,24 +109,34 @@ async function loadAndOpenPDF(pdfPath, title) {
             bookContainer.appendChild(pageDiv);
         }
 
-        activePageFlip = new St.PageFlip(bookContainer, {
-            width: 500,
-            height: 700,
-            size: "stretch",
-            minWidth: 300,
-            maxWidth: 1000,
-            minHeight: 400,
-            maxHeight: 1400,
-            showCover: false,
-            drawShadow: true,
-            maxShadowOpacity: 0.4,
-            mobileScrollSupport: true,
-            usePortrait: true,
-            flippingTime: 400
-        });
+        // Check if user is on a mobile phone (screen width less than 768px)
+        const isMobile = window.innerWidth < 768;
 
-        activePageFlip.loadFromHTML(bookContainer.querySelectorAll('.page'));
-        bookContainer.style.opacity = '1';
+        if (isMobile) {
+            // Mobile: Switch container to vertical scrolling stack
+            bookContainer.classList.add('mobile-scroll-view');
+            bookContainer.style.opacity = '1';
+        } else {
+            // Desktop/Tablet: Initialize the Page-Flip book
+            bookContainer.classList.remove('mobile-scroll-view');
+            activePageFlip = new St.PageFlip(bookContainer, {
+                width: 500,
+                height: 700,
+                size: "stretch",
+                minWidth: 300,
+                maxWidth: 1000,
+                minHeight: 400,
+                maxHeight: 1400,
+                showCover: false,
+                drawShadow: true,
+                maxShadowOpacity: 0.4,
+                usePortrait: true,
+                flippingTime: 400
+            });
+
+            activePageFlip.loadFromHTML(bookContainer.querySelectorAll('.page'));
+            bookContainer.style.opacity = '1';
+        }
 
     } catch (error) {
         console.error("Error loading PDF:", error);
