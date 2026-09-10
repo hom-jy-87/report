@@ -1,7 +1,6 @@
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
 let activePageFlip = null;
-let currentZoom = 1.0;
 
 // --- CONFIGURATION ---
 const GITHUB_USER = 'hom-jy-87';
@@ -55,7 +54,7 @@ async function loadPDFLibrary() {
 
         card.innerHTML = `
             <h3>${formattedTitle}</h3>
-            <span class="read-btn">Open Book &rarr;</span>
+            <span class="read-btn">Read &rarr;</span>
         `;
 
         libraryGrid.appendChild(card);
@@ -109,7 +108,7 @@ async function loadAndOpenPDF(pdfPath, title) {
             bookContainer.appendChild(pageDiv);
         }
 
-        // Responsive Check: Mobile uses vertical stack for pinch/zoom/pan, Desktop uses flipbook
+        // Responsive Check: Mobile uses vertical stack for smooth scroll/pinch-zoom, Desktop uses flipbook
         const isMobile = window.innerWidth < 768;
 
         if (isMobile) {
@@ -143,33 +142,7 @@ async function loadAndOpenPDF(pdfPath, title) {
     }
 }
 
-// --- ZOOM CONTROLS (Desktop Only) ---
-function zoomIn() {
-    if (currentZoom < 2.5) {
-        currentZoom += 0.25;
-        applyZoom();
-    }
-}
-
-function zoomOut() {
-    if (currentZoom > 1.0) {
-        currentZoom -= 0.25;
-        applyZoom();
-    }
-}
-
-function applyZoom() {
-    const book = document.getElementById('book');
-    if (book) {
-        book.style.transform = `scale(${currentZoom})`;
-    }
-}
-
 function closeReader() {
-    // Reset zoom state
-    currentZoom = 1.0;
-    applyZoom();
-
     try {
         if (activePageFlip) {
             activePageFlip.destroy();
@@ -179,7 +152,7 @@ function closeReader() {
         console.log("Cleanup note:", e);
     }
     
-    // Recreate the book container entirely to strip lingering Page-Flip wrappers
+    // Recreate the book container entirely to strip lingering wrappers
     const viewport = document.querySelector('.book-viewport');
     const oldBook = document.getElementById('book');
     if (oldBook) {
