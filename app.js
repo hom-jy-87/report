@@ -145,10 +145,17 @@ function closeReader() {
         console.log("Cleanup note:", e);
     }
     
-    // Clear out the flipbook container completely
-    const bookContainer = document.getElementById('book');
-    bookContainer.innerHTML = '';
-    bookContainer.style.opacity = '0';
+    // NUCLEAR OPTION: Recreate the book container entirely to strip all lingering Page-Flip DOM wrappers
+    const viewport = document.querySelector('.book-viewport');
+    const oldBook = document.getElementById('book');
+    if (oldBook) {
+        oldBook.remove();
+    }
+    
+    const newBook = document.createElement('div');
+    newBook.id = 'book';
+    newBook.style.opacity = '0';
+    viewport.appendChild(newBook);
     
     // Hide reader view, restore header, and show bookshelf
     document.getElementById('readerView').style.display = 'none';
