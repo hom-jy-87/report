@@ -110,17 +110,17 @@ async function loadAndOpenPDF(pdfPath, title) {
         }
 
         activePageFlip = new St.PageFlip(bookContainer, {
-            width: 400,
-            height: 600,
-            size: "stretch", // Dynamically scales to fit the container width
-            minWidth: 280,
-            maxWidth: 600,
+            width: 500,
+            height: 700,
+            size: "stretch",
+            minWidth: 300,
+            maxWidth: 1000,
             minHeight: 400,
-            maxHeight: 850,
+            maxHeight: 1400,
             showCover: false,
             drawShadow: true,
-            maxShadowOpacity: 0.5,
-            mobileScrollSupport: true,
+            maxShadowOpacity: 0.4,
+            mobileScrollSupport: false, // Disables page scrolling up/down so swiping turns pages cleanly
             usePortrait: true,
             flippingTime: 400
         });
