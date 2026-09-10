@@ -179,17 +179,17 @@ main {
 
 #book.mobile-scroll-view .page {
     width: 100% !important;
-    max-width: 550px;
+    max-width: 600px;
     height: auto !important;
     min-height: auto !important;
     box-shadow: 0 4px 15px rgba(0,0,0,0.6);
     border-radius: 6px;
     flex-shrink: 0;
+    background-color: white;
 }
 
 #book.mobile-scroll-view .page canvas {
     width: 100% !important;
     height: auto !important;
     display: block;
-    object-fit: contain;
 }
