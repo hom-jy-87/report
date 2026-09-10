@@ -145,7 +145,12 @@ function closeReader() {
         console.log("Cleanup note:", e);
     }
     
-    document.getElementById('book').innerHTML = '';
+    // Clear out the flipbook container completely
+    const bookContainer = document.getElementById('book');
+    bookContainer.innerHTML = '';
+    bookContainer.style.opacity = '0';
+    
+    // Hide reader view, restore header, and show bookshelf
     document.getElementById('readerView').style.display = 'none';
     document.querySelector('header').style.display = 'block';
     document.getElementById('libraryView').style.display = 'grid';
