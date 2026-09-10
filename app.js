@@ -77,7 +77,7 @@ async function loadAndOpenPDF(pdfPath, title) {
     document.querySelector('header').style.display = 'none';
     document.getElementById('libraryView').style.display = 'none';
     document.getElementById('readerView').style.display = 'flex';
-    document.getElementById('readerTitle').textContent = title;
+    
 
     const bookContainer = document.getElementById('book');
     bookContainer.innerHTML = '';
@@ -125,7 +125,7 @@ async function loadAndOpenPDF(pdfPath, title) {
             flippingTime: 400
         });
 
-        activePageFlip.loadFromHTML(document.querySelectorAll('.page'));
+        activePageFlip.loadFromHTML(bookContainer.querySelectorAll('.page'));
         bookContainer.style.opacity = '1';
 
     } catch (error) {
