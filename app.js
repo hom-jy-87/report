@@ -90,7 +90,7 @@ async function loadAndOpenPDF(pdfPath, title) {
 
         for (let i = 1; i <= numPages; i++) {
             const page = await pdfDoc.getPage(i);
-            const viewport = page.getViewport({ scale: 2.5 });
+            const viewport = page.getViewport({ scale: 2.0 });
 
             const pageDiv = document.createElement('div');
             pageDiv.className = 'page';
